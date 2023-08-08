@@ -1,9 +1,16 @@
 use url::Url;
 
 pub fn extract_hostname(url: &str) -> Option<String> {
-  if let Ok(url) = Url::parse(url) {
+  let parsed_url = Url::parse(url);
+
+  if let Ok(url) = parsed_url {
     if let Some(host) = url.host_str() {
       return Some(host.to_string());
+    }
+  } else if let Some(index) = url.find('@') {
+    let rem = &url[index + 1..];
+    if let Some(colon_pos) = rem.find(':') {
+      return Some(rem[..colon_pos].to_string());
     }
   }
 
