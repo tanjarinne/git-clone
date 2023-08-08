@@ -13,4 +13,8 @@ fn main() {
   if let Ok(Some(root_path)) = git::root_dir() {
     println!("Root path: {}", root_path);
   }
+
+  if let Some(path) = url::extract_segments(&args[1]) {
+    println!("Segments: {}", path);
+  }
 }

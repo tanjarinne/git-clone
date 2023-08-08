@@ -17,24 +17,19 @@ pub fn extract_hostname(url: &str) -> Option<String> {
   None
 }
 
-pub fn extract_owner_and_repo(url: &str) -> Option<(String, String)> {
+pub fn extract_segments(url: &str) -> Option<String> {
   if let Ok(url) = Url::parse(url) {
-    if let Some(segments) = url.path_segments() {
-      let mut segments_iter = segments.into_iter();
-      if let Some(owner) = segments_iter.next() {
-        if let Some(repo) = segments_iter.next() {
-          return Some((owner.to_string(), repo.to_string()));
-        }
-      }
+    let segments: Vec<String> = url.path_segments()
+      .unwrap()
+      .map(String::from)
+      .collect();
+    if !segments.is_empty() {
+      return Some(segments.join("/"))
     }
   } else if let Some(index) = url.find(':') {
     let rem = &url[index + 1..];
-    if let Some(slash_pos) = rem.find('/') {
-      let owner = rem[..slash_pos].to_string();
-      let repo = rem[slash_pos + 1..]
-        .trim_end_matches(".git")
-        .to_string();
-      return Some((owner, repo));
+    if let Some(dotgit) = rem.find(".git") {
+      return Some(rem[..dotgit].to_string())
     }
   }
 
@@ -62,24 +57,18 @@ mod tests {
   }
 
   #[test]
-  fn test_extract_owner_and_repo() {
-    let test_cases: Vec<(&str, Option<(&str, &str)>)> = vec![
-      ("https://www.example.com/path/to/something", Some(("path", "to"))),
-      ("git@github.com:owner/repo.git", Some(("owner", "repo"))),
+  fn test_extract_segments() {
+    let test_cases: Vec<(&str, Option<&str>)> = vec![
+      ("https://www.example.com/path/to/something", Some("path/to/something")),
+      ("git@github.com:owner/repo.git", Some("owner/repo")),
+      ("git@gitlab.com:owner/subgroup/repo.git", Some("owner/subgroup/repo")),
       ("invalid", None),
       ("", None),
     ];
 
     for (input, expected) in test_cases {
-      let result = extract_owner_and_repo(input);
-      match (result, expected) {
-        (Some((actual_owner, actual_repo)), Some((expected_owner, expected_repo))) => {
-          assert_eq!(actual_owner, expected_owner);
-          assert_eq!(actual_repo, expected_repo);
-        }
-        (None, None) => {}
-        _ => panic!("Test failed for: {}", input),
-      }
+      let result = extract_segments(input);
+      assert_eq!(result.as_deref(), expected);
     }
   }
 }
