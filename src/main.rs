@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, process::Command};
 
 mod url;
 mod git;
@@ -21,7 +21,15 @@ fn main() {
   let new_dir_expanded = shellexpand::tilde(&new_dir);
   if let Err(err) = mkdir(&new_dir_expanded) {
     eprintln!("Error creating directory structure {}", err);
-    return;
+
   }
   print!("{}/{}/{}", root_path, host, path);
+
+  Command::new("git")
+    .arg("clone")
+    .current_dir(new_dir_expanded.to_string())
+    .args(&args[1..])
+    .arg(".")
+    .spawn()
+    .expect("git clone failed");
 }
