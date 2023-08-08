@@ -1,0 +1,27 @@
+name: git-clone pull request pipelines
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+    types:
+    - opened
+    - reopened
+    - unlocked
+    - edited
+    branches:
+    - 'feature/**'
+
+jobs:
+
+  app-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: cargo build --verbose
+      - name: Test
+        run: cargo test --verbose
