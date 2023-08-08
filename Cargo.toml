@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 git2 = "0.17.2"
+shellexpand = "3.1.0"
 url = "2.4.0"
