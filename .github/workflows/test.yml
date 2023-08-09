@@ -38,3 +38,4 @@ jobs:
           cargo build --release
           temp=$(mktemp -d)
           git config --local 'tanjarinne.git-clone.root-path' $temp
+          ls -lah $temp
