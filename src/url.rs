@@ -18,18 +18,30 @@ pub fn extract_hostname(url: &str) -> Option<String> {
 }
 
 pub fn extract_segments(url: &str) -> Option<String> {
-  if let Ok(url) = Url::parse(url) {
-    let segments: Vec<String> = url.path_segments()
-      .unwrap()
-      .map(String::from)
+  fn extract_common(segments: Vec<&str>) -> Option<String> {
+    let mut vec_segments: Vec<String> = segments.iter()
+      .map(|&s| s.to_string())
       .collect();
-    if !segments.is_empty() {
-      return Some(segments.join("/"))
+    if !vec_segments.is_empty() {
+      vec_segments.truncate(vec_segments.len() -1);
+      Some(vec_segments.join("/"))
+    } else {
+      None
     }
+  }
+  if let Ok(url) = Url::parse(url) {
+    let segments: Vec<&str> = url.path_segments()
+      .unwrap()
+      .collect();
+    return extract_common(segments);
   } else if let Some(index) = url.find(':') {
+    // git@host:owner/subgroup/group.git
     let rem = &url[index + 1..];
     if let Some(dotgit) = rem.find(".git") {
-      return Some(rem[..dotgit].to_string())
+      let segments: Vec<&str> = rem[..dotgit]
+        .split("/")
+        .collect();
+      return extract_common(segments);
     }
   }
 
@@ -59,9 +71,9 @@ mod tests {
   #[test]
   fn test_extract_segments() {
     let test_cases: Vec<(&str, Option<&str>)> = vec![
-      ("https://www.example.com/path/to/something", Some("path/to/something")),
-      ("git@github.com:owner/repo.git", Some("owner/repo")),
-      ("git@gitlab.com:owner/subgroup/repo.git", Some("owner/subgroup/repo")),
+      ("https://www.example.com/path/to/something", Some("path/to")),
+      ("git@github.com:owner/repo.git", Some("owner")),
+      ("git@gitlab.com:owner/subgroup/repo.git", Some("owner/subgroup")),
       ("invalid", None),
       ("", None),
     ];

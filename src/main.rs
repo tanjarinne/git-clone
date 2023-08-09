@@ -29,7 +29,6 @@ fn main() {
     .arg("clone")
     .current_dir(new_dir_expanded.to_string())
     .args(&args[1..])
-    .arg(".")
     .spawn()
     .expect("git clone failed");
 }
