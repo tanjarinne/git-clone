@@ -23,11 +23,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   new_dir.push(&host);
   new_dir.push(&path);
 
-  let asfsadf = format!("{}", &new_dir.display());
-  let new_dir_expanded = shellexpand::tilde(&asfsadf);
+  let new_dir_str = new_dir.to_string_lossy();
+  let new_dir_expanded = shellexpand::tilde(&new_dir_str);
+
   if let Err(err) = mkdir(&new_dir_expanded) {
     eprintln!("Error creating directory structure {}", err);
-
   }
 
   Command::new("git")
