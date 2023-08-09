@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build
+      - name: Test
         run: cargo test --verbose
 
   cli-test:
@@ -33,5 +33,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo build --release
+      - name: Prep
+        run: |
+          cargo build --release
+          temp=$(mktemp -d)
+          git config --local 'tanjarinne.git-clone.root-path' $temp
