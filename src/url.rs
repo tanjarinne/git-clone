@@ -1,32 +1,40 @@
+use std::error::Error;
+
 use url::Url;
 
-pub fn extract_hostname(url: &str) -> Option<String> {
+pub fn extract_hostname(url: &str)
+  -> Result<Option<String>, Box<dyn Error>>
+{
   let parsed_url = Url::parse(url);
 
   if let Ok(url) = parsed_url {
     if let Some(host) = url.host_str() {
-      return Some(host.to_string());
+      return Ok(Some(host.to_string()));
     }
   } else if let Some(index) = url.find('@') {
     let rem = &url[index + 1..];
     if let Some(colon_pos) = rem.find(':') {
-      return Some(rem[..colon_pos].to_string());
+      return Ok(Some(rem[..colon_pos].to_string()));
     }
   }
 
-  None
+  Ok(None)
 }
 
-pub fn extract_segments(url: &str) -> Option<String> {
-  fn extract_common(segments: Vec<&str>) -> Option<String> {
+pub fn extract_segments(url: &str)
+  -> Result<Option<String>, Box<dyn Error>>
+{
+  fn extract_common(segments: Vec<&str>)
+    -> Result<Option<String>, Box<dyn Error>>
+    {
     let mut vec_segments: Vec<String> = segments.iter()
       .map(|&s| s.to_string())
       .collect();
     if !vec_segments.is_empty() {
       vec_segments.truncate(vec_segments.len() -1);
-      Some(vec_segments.join("/"))
+      Ok(Some(vec_segments.join("/")))
     } else {
-      None
+      Ok(None)
     }
   }
   if let Ok(url) = Url::parse(url) {
@@ -45,7 +53,7 @@ pub fn extract_segments(url: &str) -> Option<String> {
     }
   }
 
-  None
+  Ok(None)
 }
 
 #[cfg(test)]
@@ -64,7 +72,7 @@ mod tests {
 
     for (input, expected) in test_cases {
       let result = extract_hostname(input);
-      assert_eq!(result.as_deref(), expected);
+      assert_eq!(result.unwrap().as_deref(), expected);
     }
   }
 
@@ -74,13 +82,14 @@ mod tests {
       ("https://www.example.com/path/to/something", Some("path/to")),
       ("git@github.com:owner/repo.git", Some("owner")),
       ("git@gitlab.com:owner/subgroup/repo.git", Some("owner/subgroup")),
+      ("git@gitlab.com:owner/some/deep/nested/repo.git", Some("owner/some/deep/nested")),
       ("invalid", None),
       ("", None),
     ];
 
     for (input, expected) in test_cases {
       let result = extract_segments(input);
-      assert_eq!(result.as_deref(), expected);
+      assert_eq!(result.unwrap().as_deref(), expected);
     }
   }
 }
