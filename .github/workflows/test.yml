@@ -39,3 +39,4 @@ jobs:
           temp=$(mktemp -d)
           git config --local 'tanjarinne.git-clone.root-path' $temp
           ls -lah $temp
+          git config --get-all 'tanjarinne.git-clone.root-path'
