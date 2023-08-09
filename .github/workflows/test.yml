@@ -14,11 +14,24 @@ on:
 
 jobs:
 
-  app-test:
+  cargo-test:
+    name: Cargo tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: cargo build --verbose
-      - name: Test
         run: cargo test --verbose
+
+  cli-test:
+    name: Functional tests
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+          macos-latest,
+        ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: cargo build --release
