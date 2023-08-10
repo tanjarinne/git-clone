@@ -40,6 +40,6 @@ jobs:
       - name: Verify
         run: |
           PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
-          (cd ${{ runner.temp }}/github.com/tanjarinne/git-clone; git remote --verbose)
+          (cd ${{ runner.temp }}/github.com/${{ github.repository }}; git remote --verbose)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
