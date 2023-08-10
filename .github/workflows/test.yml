@@ -36,10 +36,12 @@ jobs:
       - name: Prep
         run: |
           cargo build --release
-          temp=$(mktemp -d)
+          export temp=$(mktemp -d)
           git config --global 'tanjarinne.git-clone.root-path' $temp
           ls -lah $temp
           git config --get-all 'tanjarinne.git-clone.root-path'
+      - name: Verify
+        run: |
           PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
           (cd $temp/github.com/tanjarinne/git-clone; git remote --verbose)
         env:
