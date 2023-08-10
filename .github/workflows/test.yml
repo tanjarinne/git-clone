@@ -36,13 +36,10 @@ jobs:
       - name: Prep
         run: |
           cargo build --release
-          export temp=$(mktemp -d)
-          git config --global 'tanjarinne.git-clone.root-path' $temp
-          ls -lah $temp
-          git config --get-all 'tanjarinne.git-clone.root-path'
+          git config --global 'tanjarinne.git-clone.root-path' ${{ runner.temp }}
       - name: Verify
         run: |
           PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
-          (cd $temp/github.com/tanjarinne/git-clone; git remote --verbose)
+          (cd ${{ runner.temp }}/github.com/tanjarinne/git-clone; git remote --verbose)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
