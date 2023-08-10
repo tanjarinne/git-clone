@@ -41,6 +41,6 @@ jobs:
           ls -lah $temp
           git config --get-all 'tanjarinne.git-clone.root-path'
           PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
-          tree $temp
+          (cd $temp; git remote --verbose)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
