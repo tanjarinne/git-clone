@@ -37,7 +37,7 @@ jobs:
         run: |
           cargo build --release
           temp=$(mktemp -d)
-          git config --local 'tanjarinne.git-clone.root-path' $temp
+          git config --global 'tanjarinne.git-clone.root-path' $temp
           ls -lah $temp
           git config --get-all 'tanjarinne.git-clone.root-path'
           PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
