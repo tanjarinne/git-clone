@@ -1,0 +1,45 @@
+name: git-clone pull request pipelines
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+    types:
+    - opened
+    - reopened
+    - unlocked
+    - edited
+    branches:
+    - 'feature/**'
+
+jobs:
+
+  cargo-test:
+    name: Cargo tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test
+        run: cargo test --verbose
+
+  cli-test:
+    name: Functional tests
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+          macos-latest,
+        ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prep
+        run: |
+          cargo build --release
+          git config --global 'tanjarinne.git-clone.root-path' ${{ runner.temp }}
+      - name: Verify
+        run: |
+          PATH=${{ github.workspace }}/target/release:$PATH git-clone ${{ github.server_url }}/${{ github.repository }}
+          (cd ${{ runner.temp }}/github.com/${{ github.repository }}; git remote --verbose)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
