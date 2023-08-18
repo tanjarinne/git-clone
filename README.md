@@ -13,7 +13,7 @@ The tool does not clone by itself, instead it calls `git clone` in the same shel
 
 ## Disclaimer
 
-This is a tool that I use to keep my folders organised, but it's not thoroughfully tested in different operative systems etc. Although I tried to write it as clean as possible, there might be use cases that just won't work. I don't intend to keep developing it much further because it currently does what I need, but I'm open to review and accept PRs if anyone else finds it useful and needs something to change or has a contribution to make.
+This is a tool that I use to keep my folders organised, but it's not thoroughfully tested in different operative systems, shells, etc., and although I tried to write it as clean as possible, there might be conditions that it just won't work. I don't intend to keep developing it much further because it currently does what I need, but I'm open to reviewing PRs if anyone else finds it useful and needs something to change or has a contribution to make.
 
 # Author
 
